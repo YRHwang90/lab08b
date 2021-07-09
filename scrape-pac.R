@@ -3,13 +3,15 @@
 library(tidyverse)
 library(rvest)
 library(here) 
+library(robotstxt)
+paths_allowed("https://www.opensecrets.org")
 
 # function: scrape_pac ---------------------------------------------------------
 
 scrape_pac <- function(url) {
   
   # read the page
-  page <- ___(___)
+  page <- read.html(url)
   
   # extract the table
   pac <-  page %>%
@@ -17,7 +19,7 @@ scrape_pac <- function(url) {
     html_node(".DataTable") %>%
     # parse table at node td into a data frame
     #   table has a head and empty cells should be filled with NAs
-    html_table("td", header = ___, fill = ___) %>%
+    html_table("td", header = NA, fill = FALSE) %>%
     # convert to a tibble
     as_tibble()
   
@@ -25,22 +27,22 @@ scrape_pac <- function(url) {
   pac <- pac %>%
     # rename columns
     rename(
-      name = ___ ,
-      country_parent = ___,
-      total = ___,
-      dems = ___,
-      repubs = ___
+      name = PAC Name (Affiliate),
+      country_parent = Country of Origin/Parent Company,
+      total = Total,
+      dems = Dems,
+      repubs = Repubs
     )
   
   # fix name
   pac <- pac %>%
     # remove extraneous whitespaces from the name column
-    mutate(name = ___)
+    mutate(name = )
   
   # add year
   pac <- pac %>%
     # extract last 4 characters of the URL and save as year
-    mutate(year = ___)
+    mutate(year = str_sub(url,-4))
   
   # return data frame
   pac
